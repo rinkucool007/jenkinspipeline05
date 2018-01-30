@@ -34,6 +34,15 @@ node('jenkins-agent-nodejs-1') {
             echo 'Testing...'
             sh 'npm test'
         }
+	stage('Build In Openshift'){
+            echo 'Build In Openshift...'
+            openshiftBuild(namespace: 'dev-openshift', buildConfig: 'api-rest-playcourt', showBuildLogs: 'true')
+        }
+	
+	stage('Build In Openshift'){
+            echo 'Build In Openshift...'
+            openshiftBuild(namespace: 'dev-openshift', buildConfig: 'api-rest-playcourt', showBuildLogs: 'true')
+        }
 	
     }finally{
         
@@ -43,12 +52,6 @@ node('jenkins-agent-nodejs-1') {
         withSonarQubeEnv('SonarQube') {
           sh "${scannerHome}/bin/sonar-scanner"
         }
-
-	stage 'buildInDevelopment'
-	openshiftBuild(namespace: 'dev-openshift', buildConfig: 'api-rest-playcourt', showBuildLogs: 'true')
-	stage 'deployInDevelopment'
-	openshiftDeploy(namespace: 'dev-openshift', deploymentConfig: 'api-rest-playcourt')
-	openshiftScale(namespace: 'dev-openshift', deploymentConfig: 'api-rest-playcourt',replicaCount: '1')
 
     }
     
