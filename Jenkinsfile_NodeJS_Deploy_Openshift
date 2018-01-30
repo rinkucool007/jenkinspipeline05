@@ -39,11 +39,6 @@ node('jenkins-agent-nodejs-1') {
             openshiftBuild(namespace: 'dev-openshift', buildConfig: 'api-rest-playcourt', showBuildLogs: 'true')
         }
 	
-	stage('Build In Openshift'){
-            echo 'Build In Openshift...'
-            openshiftBuild(namespace: 'dev-openshift', buildConfig: 'api-rest-playcourt', showBuildLogs: 'true')
-        }
-	
     }finally{
         
         stage('SonarQube analysis') {
