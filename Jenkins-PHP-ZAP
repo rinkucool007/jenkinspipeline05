@@ -49,4 +49,3 @@ node('jenkins-agent-php-1') {
   }
  
 }
-
