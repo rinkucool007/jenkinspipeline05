@@ -1,0 +1,22 @@
+api-aon.playcourt.id
+
+openshiftExec apiURL: 'https://lab.playcourt.id/', authToken: 'Zu8-nnzOTseNcTOMIz2yKCycaXt3Nowz4e_NbhFVpYg', command: 'echo "Hallo"', container: '', namespace: 'dev-playcourt', pod: 'vmlike-hackidea-1-pfrxk', verbose: 'false', waitTime: '', waitUnit: 'sec'
+
+	stage 'buildInDevelopment'
+	openshiftBuild apiURL: 'https://lab.playcourt.id', authToken: 'QgZd5TALnmSzSyKzRW8dzRZVdeLZ9_2R4s_taBvDs28', bldCfg: 'hackidea-lab-test', buildName: '', checkForTriggeredDeployments: 'false', commitID: '', namespace: 'dev-playcourt', showBuildLogs: 'true', verbose: 'false', waitTime: '60', waitUnit: 'min'
+
+	stage 'deployInDevelopment'
+	openshiftDeploy apiURL: 'https://lab.playcourt.id', authToken: 'QgZd5TALnmSzSyKzRW8dzRZVdeLZ9_2R4s_taBvDs28', depCfg: 'hackidea-lab-test', namespace: 'dev-playcourt', verbose: 'false', waitTime: '60', waitUnit: 'min'
+
+openshiftExec apiURL: 'https://lab.playcourt.id', authToken: 'QgZd5TALnmSzSyKzRW8dzRZVdeLZ9_2R4s_taBvDs28', command: 'echo "Hello"', container: '', namespace: 'dev-playcourt', pod: ${POD}, waitTime: '60', waitUnit: 'min'
+
+node('jenkins-agent') {
+    // Git committer email
+    sh 'oc login lab.playcourt.id --token=QgZd5TALnmSzSyKzRW8dzRZVdeLZ9_2R4s_taBvDs28'
+    LS = sh (
+        script: "oc get pods | grep 'Running' | grep 'hackidea-lab-test' | awk -F' ' '{print \$1}'",
+        returnStdout: true
+    ).trim()
+    
+    echo "hasil: ${LS}"
+}

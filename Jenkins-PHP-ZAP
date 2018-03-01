@@ -1,0 +1,52 @@
+node('jenkins-agent-php-1') {
+ status = "0"
+
+ try{
+     
+   stage('Cleaning Workspace') {
+       echo 'Initializing for clean build...'
+       deleteDir()
+   }
+ 
+   try{
+       
+       stage('ZAPROXY'){
+           echo 'Starting ZAP...'
+           sh '/var/lib/jenkins/tools/zap/zap.sh -daemon -host jenkins-agent-php-1 -port 8090 -config api.disablekey=true -config api.addrs.addr.name=.* -config api.addrs.addr.regex=true  > /dev/null 2>&1 &'
+	       sleep 30
+	       echo 'Checking ZAP Status...'
+	       sh 'zap-cli --zap-path /var/lib/jenkins/tools/zap/ --zap-url http://jenkins-agent-php-1 -p 8090 status'
+	       echo 'Opening URL...'
+	       sh 'zap-cli --zap-path /var/lib/jenkins/tools/zap/ --zap-url http://jenkins-agent-php-1 -p 8090 open-url https://www.playcourt.id/'
+	       echo 'Spidering URL...'
+	       sh 'zap-cli --zap-path /var/lib/jenkins/tools/zap/ --zap-url http://jenkins-agent-php-1 -p 8090 spider https://www.playcourt.id/'
+	       echo 'Active Scan...'
+	       sh 'zap-cli --zap-path /var/lib/jenkins/tools/zap/ --zap-url http://jenkins-agent-php-1 -p 8090 active-scan -s all -r https://www.playcourt.id/'
+	       echo 'Output...'
+	       sh 'zap-cli --zap-path /var/lib/jenkins/tools/zap/ --zap-url http://jenkins-agent-php-1 -p 8090 alerts -l Informational'
+	       echo 'Generating HTML...'
+	       sh 'zap-cli --zap-path /var/lib/jenkins/tools/zap/ --zap-url http://jenkins-agent-php-1 -p 8090 report -o ./report.html -f html'
+	       echo 'Stoping ZAP...'
+           sh 'zap-cli --zap-path /var/lib/jenkins/tools/zap/ --zap-url http://jenkins-agent-php-1 -p 8090 shutdown'
+           status = "1"
+       }
+   }finally{
+       stage('Publish HTML'){
+           publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: false, reportDir: './', reportFiles: 'report.html', reportName: 'HTML Report', reportTitles: ''])
+       }
+ }
+
+ }catch(e){
+
+   throw e;
+ }
+ 
+  if(status == "1"){
+      echo "hasil: ${status}"
+      echo "Test Berhasil"
+  }else{
+      echo "Test Gagal"
+  }
+ 
+}
+
