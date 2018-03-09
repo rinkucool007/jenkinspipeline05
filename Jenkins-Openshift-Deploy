@@ -1,5 +1,3 @@
-api-aon.playcourt.id
-
 openshiftExec apiURL: '${env.openshifthost}', authToken: '${env.token}', command: 'echo "Hallo"', container: '', namespace: 'dev-playcourt', pod: 'vmlike-hackidea-1-pfrxk', verbose: 'false', waitTime: '', waitUnit: 'sec'
 
 	stage 'buildInDevelopment'
